@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.B. PUBLIC SCHOOL - Student Portal</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #ff9a9e 0%, #fad0c4 35%, #fad0c4 100%),
+                        linear-gradient(135deg, #72edf2 0%, #5151e5 100%);
+            color: #222;
+            overflow-x: hidden;
+        }
+        
+        /* Login Page */
+        .login-container {
+            max-width: 420px;
+            margin: 70px auto;
+            padding: 35px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.85) 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+        .login-container h2 {
+            margin-bottom: 10px;
+            color: #ff4d6d;
+            text-shadow: 0 2px 10px rgba(255,77,109,0.35);
+        }
+        .login-container p {
+            color: #5a4a8f;
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 2px solid #ffd700;
+            border-radius: 999px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.95);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .login-container button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 100%);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 20px rgba(255,95,109,0.28);
+        }
+        .login-container button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 26px rgba(255,95,109,0.32);
+        }
+        .login-container .emergency-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 14px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            font-weight: 700;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 10px 20px rgba(79,172,254,0.3);
+        }
+        .login-container .emergency-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 20, 40, 0.75);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 500;
+        }
+        .modal-card {
+            width: min(100%, 520px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(245,245,255,0.98) 100%);
+            border-radius: 22px;
+            padding: 28px 30px;
+            box-shadow: 0 24px 70px rgba(0,0,0,0.25);
+            position: relative;
+            text-align: left;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-card h3 {
+            margin-bottom: 8px;
+            color: #3f37c9;
+        }
+        .modal-card p {
+            margin-bottom: 18px;
+            color: #555;
+            line-height: 1.5;
+        }
+        .modal-card .close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 38px;
+            height: 38px;
+            background: #ff5f6d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .modal-card select,
+        .modal-card input {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid #d3d3ff;
+            background: white;
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+        .modal-card .open-class-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #8e2de2 0%, #4a00e0 100%);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+        .checking-card {
+            text-align: center;
+        }
+        .spinner {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border: 8px solid rgba(79,172,254,0.25);
+            border-top-color: #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .class-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(250,240,255,0.95));
+            border: 1px solid rgba(143, 94, 255,0.24);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 16px 30px rgba(79,172,254,0.08);
+        }
+        .class-card h4 {
+            margin-bottom: 10px;
+            color: #4a00e0;
+        }
+        .class-card p {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .small-note {
+            color: #7b7b7b;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        /* Dashboard */
+        #dashboard { display: none; }
+        header {
+            background: linear-gradient(135deg, #5b2df2, #ff477e);
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+        }
+        header h2 {
+            font-size: 1.35rem;
+            letter-spacing: 0.9px;
+        }
+        .menu-btn {
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.45);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 16px;
+            padding: 10px 14px;
+        }
+        .menu-btn:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100%;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f0ff 100%);
+            box-shadow: 8px 0 35px rgba(0,0,0,0.16);
+            transition: 0.3s;
+            z-index: 200;
+            padding: 30px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            border-right: 1px solid rgba(128, 0, 255, 0.12);
+        }
+        .sidebar.active { left: 0; }
+        .close-btn {
+            align-self: flex-end;
+            background: #ff375f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(255,55,95,0.26);
+        }
+        .school-logo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; display: block; border: 2px solid #1a237e; }
+        .sidebar button {
+            width: 100%;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #ffe6ff, #f3f1ff);
+            border: 1px solid rgba(138, 48, 255, 0.16);
+            border-radius: 14px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #5017d4;
+        }
+        .sidebar button:hover {
+            background: #5017d4;
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content { max-width: 960px; margin: 22px auto; padding: 22px; }
+        .student-summary {
+            background: linear-gradient(135deg, #fff3e0, #fce4ec);
+            padding: 22px;
+            border-radius: 26px;
+            box-shadow: 0 24px 55px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 0, 123, 0.12);
+        }
+        .student-summary img {
+            width: 100px;
+            height: 100px;
+            border-radius: 22px;
+            object-fit: cover;
+            border: 4px solid #ff5f6d;
+        }
+        .student-summary h3 {
+            font-size: 1.55rem;
+            color: #3f1d82;
+            margin-bottom: 6px;
+        }
+        .student-summary p {
+            font-size: 1rem;
+            color: #42275a;
+        }
+        
+        /* Sections */
+        .section { display: none; background: white; padding: 24px; border-radius: 22px; box-shadow: 0 20px 38px rgba(0,0,0,0.07); margin-top: 24px; border: 1px solid rgba(79,172,254,0.1); }
+        .section.active { display: block; }
+        .section h3 { margin-bottom: 16px; color: #4d148c; }
+        
+        /* Profile Styling */
+        .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .profile-item { padding: 12px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #1a237e; }
+        .profile-item strong { color: #1a237e; text-transform: capitalize; }
+
+        /* Fee Card Design */
+        .fee-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .fee-table th, .fee-table td { padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 16px; }
+        .fee-table th { background: #1a237e; color: white; }
+        .fee-total { background: #e8eaf6; font-weight: bold; }
+        .fee-paid { background: #e8f5e9; color: green; font-weight: bold; }
+        .fee-unpaid { background: #ffebee; color: red; font-weight: bold; }
+
+        /* Marksheet Design */
+        .marksheet-container { border: 3px double #1a237e; padding: 20px; background: white; color: #000; font-size: 13px; max-width: 100%; overflow: hidden; }
+        .marksheet-header { text-align: center; margin-bottom: 15px; border-bottom: 2px dashed #1a237e; padding-bottom: 10px; }
+        .marksheet-info { display: flex; justify-content: space-between; margin-bottom: 15px; background: #f9f9f9; padding: 10px; border: 1px solid #ccc; gap: 10px; }
+        .marksheet-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .marksheet-table { width: 100%; min-width: 760px; border-collapse: collapse; margin-top: 10px; }
+        .marksheet-table th, .marksheet-table td { border: 1px solid #333; padding: 8px 4px; text-align: center; height: 35px; }
+        .marksheet-table th { background: #eaedf9; color: #000; font-weight: bold; }
+        
+        /* Message UI */
+        .msg-box textarea { width: 100%; height: 100px; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; resize: none; }
+        .action-btn { display: inline-block; padding: 14px 22px; color: white; text-decoration: none; border-radius: 999px; font-weight: bold; cursor: pointer; text-align: center; border: none; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .action-btn:hover { transform: translateY(-1px); }
+        .whatsapp-btn { background: linear-gradient(90deg, #25D366 0%, #35D16E 100%); }
+        .call-btn { background: linear-gradient(90deg, #450af5 0%, #7b2ff7 100%); width: 100%; margin-top: 20px; font-size: 16px; box-shadow: 0 18px 30px rgba(69,10,245,0.18); }
+
+        @media (max-width: 768px) {
+            .login-container { margin: 40px 10px; padding: 25px; width: auto; }
+            header { flex-wrap: wrap; gap: 10px; text-align: center; }
+            .menu-btn { margin-left: auto; }
+            .sidebar { width: 100%; left: -100%; max-width: 100%; padding: 20px; }
+            .sidebar.active { left: 0; }
+            .main-content { margin: 15px 10px; padding: 15px; }
+            .student-summary { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .student-summary img { width: 100%; max-width: 120px; height: 120px; }
+            .profile-grid { grid-template-columns: 1fr; }
+            .marksheet-info { flex-direction: column; gap: 10px; }
+            .marksheet-container { padding: 10px; font-size: 12px; }
+            .marksheet-header h2 { font-size: 18px; }
+            .marksheet-wrapper { overflow-x: auto; }
+            .marksheet-table { min-width: 720px; }
+            .marksheet-table th, .marksheet-table td { font-size: 11px; padding: 6px 4px; height: auto; }
+            .fee-table th, .fee-table td { font-size: 14px; }
+            .action-btn { width: 100%; }
+            .sidebar button { font-size: 15px; padding: 12px; }
+            .sidebar .school-logo { width: 90px; height: 90px; }
+            .section { padding: 15px; }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #marksheet-section, #marksheet-section * { visibility: visible; }
+            #marksheet-section { position: absolute; left: 0; top: 0; width: 100%; border: none; background: white; }
+            .no-print { display: none !important; }
+            .marksheet-container { border: 2px solid #000; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page" class="login-container">
+        <h2>S.B. PUBLIC SCHOOL</h2>
+        <p style="color: #666; margin-bottom: 15px;">Student Portal Login</p>
+        <input type="text" id="sid-input" placeholder="Enter Student ID (SID)" required>
+        <button onclick="login()">Go to Dashboard</button>
+        <button class="emergency-btn" onclick="openEmergencyModal()">Emergency Class Lookup</button>
+    </div>
+
+    <div id="emergency-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button class="close-btn" onclick="closeEmergencyModal()">×</button>
+            <h3>Emergency Class Lookup</h3>
+            <p>Select your class from the list and click Open to view all student profiles in that class.</p>
+            <select id="class-select">
+                <option value="">Loading classes...</option>
+            </select>
+            <button class="action-btn open-class-btn" onclick="showClassProfiles()">Open Class</button>
+            <div id="class-profiles"></div>
+        </div>
+    </div>
+
+    <div id="checking-modal" class="modal-overlay">
+        <div class="modal-card checking-card">
+            <div class="spinner"></div>
+            <h3>Checking SID...</h3>
+            <p>Apka SID verify ho raha hai. Dashboard khul raha hai.</p>
+        </div>
+    </div>
+
+    <div id="dashboard">
+        <header>
+            <h2>S.B. PUBLIC SCHOOL</h2>
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        </header>
+
+        <div id="sidebar" class="sidebar">
+            <button class="close-btn" onclick="toggleSidebar()">×</button>
+            <img src="images.jfif" alt="School Logo" class="school-logo" onerror="this.src='https://via.placeholder.com/100'">
+            <button onclick="showSection('profile-section')">👤 Student Profile</button>
+            <button onclick="showSection('marksheet-section')">📄 Marksheet</button>
+            <button onclick="showSection('fee-section')">💰 Fee Details</button>
+            <button onclick="showSection('message-section')">💬 Message Box</button>
+            <button onclick="logout()" style="background:#dc3545; color:white; margin-top:auto;">🚪 Logout</button>
+        </div>
+
+        <div class="main-content">
+            <div class="student-summary">
+                <img id="dash-photo" src="" alt="Student Photo" onerror="this.src='https://via.placeholder.com/150'">
+                <div>
+                    <h3 id="dash-name">Loading...</h3>
+                    <p id="dash-class">Class: --</p>
+                </div>
+            </div>
+
+            <button class="action-btn call-btn" onclick="window.location.href='tel:6389259200'">📞 Contact Us (6389259200)</button>
+
+            <div id="profile-section" class="section active">
+                <h3>Student Full Profile</h3>
+                <div class="profile-grid" id="profile-data"></div>
+            </div>
+
+            <div id="marksheet-section" class="section">
+                <button class="action-btn no-print" onclick="window.print()" style="background:#333; margin-bottom:15px; width: 100%;">🖨️ Print Marksheet (A4 Paper)</button>
+                <div class="marksheet-container">
+                    <div class="marksheet-header">
+                        <h2 style="color: #1a237e; font-size: 22px;">S.B. PUBLIC SCHOOL</h2>
+                        <h4 style="letter-spacing: 1px; margin-top: 5px;">Chhitauna,Nichlaul,Maharajganj (UP)</h4>
+                    </div>
+                    
+                    <div class="marksheet-info">
+                        <div>
+                            <p><strong>Student Name:</strong> <span id="ms-name"></span></p>
+                            <p><strong>Class:</strong> <span id="ms-class"></span></p>
+                        </div>
+                        <div>
+                            <p><strong>Student ID (SID):</strong> <span id="ms-sid"></span></p>
+                            <p><strong>Status:</strong> <span style="color: green; font-weight: bold;">Verified</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="marksheet-wrapper">
+                        <table class="marksheet-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="text-align: left; padding-left: 8px; width: 25%;">Subjects</th>
+                                    <th colspan="2">Unit Test-I</th>
+                                    <th colspan="2">Unit Test-II</th>
+                                    <th colspan="2">Half Yearly</th>
+                                    <th colspan="2">Unit Test-III</th>
+                                    <th colspan="2">Annual Exam</th>
+                                </tr>
+                                <tr>
+                                    <th>Max</th><th>Obt</th>
+                                    <th>Max</th><th>Obt</th>
+                                    <th>Max</th><th>Obt</th>
+                                    <th>Max</th><th>Obt</th>
+                                    <th>Max</th><th>Obt</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksheet-rows"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fee-section" class="section">
+                <h3>💰 Fee Status Details</h3>
+                <div id="fee-data" style="margin-top:15px;"></div>
+            </div>
+
+            <div id="message-section" class="section msg-box">
+                <h3>💬 Send Message to School </h3>
+                <p style="margin-bottom: 10px; color:#666; font-size: 14px;">Direct WhatsApp to +916389259200:</p>
+                <textarea id="whatsapp-msg" placeholder="Apna message yahan likhein..."></textarea>
+                <button class="action-btn whatsapp-btn" onclick="sendWhatsApp()">📤 WhatsApp Par Bhejein</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbxc5u5L5ZYgdDb-5js4WKQ5R3GrcN8eg7MZvSACTZXslPfzRpa0aFwv7puU2zxIXVFdAA/exec";
+        const LOCAL_DB_URL = "databash.json";
+        let studentData = null;
+        let schoolData = {
+            students: [],
+            fees: [],
+            marksheets: [],
+            subjects: [],
+            exams: []
+        };
+
+        window.onload = function() {
+            const savedSID = localStorage.getItem("loggedInSID");
+            if (savedSID) { fetchAndVerify(savedSID); }
+        };
+
+        function toggleSidebar() { document.getElementById("sidebar").classList.toggle("active"); }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.getElementById("sidebar").classList.remove("active");
+        }
+
+        async function login() {
+            const sidInput = document.getElementById("sid-input").value.trim();
+            if (!sidInput) { alert("!! Please Enter Your SID !!"); return; }
+            showCheckingPopup(true);
+            setTimeout(async () => {
+                await fetchAndVerify(sidInput);
+                showCheckingPopup(false);
+            }, 900);
+        }
+
+        function showCheckingPopup(show) {
+            document.getElementById("checking-modal").style.display = show ? "flex" : "none";
+        }
+
+        async function openEmergencyModal() {
+            if (!schoolData.students.length) {
+                try {
+                    const response = await fetch(API_URL);
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        schoolData.students = data;
+                    } else if (data && typeof data === 'object') {
+                        schoolData.students = Array.isArray(data.students) ? data.students : Array.isArray(data.users) ? data.users : schoolData.students;
+                    }
+                } catch (error) {
+                    console.warn('Could not pre-load emergency class list:', error);
+                }
+            }
+
+            const classSelect = document.getElementById("class-select");
+            const defaultClasses = ["NS", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+            const loadedClasses = [...new Set(schoolData.students.map(s => s.class || s.std || s.standard || s.grade || '').filter(Boolean))];
+            const classes = [...new Set([...defaultClasses, ...loadedClasses])].sort((a, b) => {
+                const numericA = Number(a);
+                const numericB = Number(b);
+                if (!Number.isNaN(numericA) && !Number.isNaN(numericB)) return numericA - numericB;
+                if (!Number.isNaN(numericA)) return -1;
+                if (!Number.isNaN(numericB)) return 1;
+                return a.localeCompare(b, undefined, { sensitivity: 'base' });
+            });
+            classSelect.innerHTML = `<option value="">Select Class</option>` + classes.map(cl => `<option value="${cl}">${cl}</option>`).join('');
+            document.getElementById("class-profiles").innerHTML = '';
+            document.getElementById("emergency-modal").style.display = "flex";
+        }
+
+        function closeEmergencyModal() {
+            document.getElementById("emergency-modal").style.display = "none";
+        }
+
+        function showClassProfiles() {
+            const selected = document.getElementById("class-select").value;
+            if (!selected) { alert("Kripya class chunen."); return; }
+
+            const profiles = schoolData.students.filter(s => String(s.class || s.std || s.standard || s.grade || '') === String(selected));
+            if (!profiles.length) {
+                document.getElementById("class-profiles").innerHTML = '<p class="small-note">Is class ka student data uplabdh nahi hai.</p>';
+                return;
+            }
+
+            const html = profiles.map(st => {
+                const name = st.name || st.student_name || st.student || 'N/A';
+                const sid = st.sid || st.id || st.student_id || 'N/A';
+                const std = st.class || st.std || st.standard || st.grade || 'N/A';
+                const phone = st.mobile || st.phone || 'N/A';
+                return `<div class="class-card">
+                            <h4>${name}</h4>
+                            <p><strong>SID:</strong> ${sid}</p>
+                            <p><strong>Class:</strong> ${std}</p>
+                            <p><strong>Mobile:</strong> ${phone}</p>
+                        </div>`;
+            }).join('');
+
+            document.getElementById("class-profiles").innerHTML = `<div class="class-grid">${html}</div>`;
+        }
+
+        async function fetchAndVerify(sid) {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                let studentsList = [];
+                let remoteHasStudents = false;
+
+                if (Array.isArray(data)) {
+                    studentsList = data;
+                    schoolData.students = data;
+                    remoteHasStudents = true;
+                } else if (data && typeof data === 'object') {
+                    schoolData.students = Array.isArray(data.students) ? data.students : Array.isArray(data.users) ? data.users : [];
+                    schoolData.fees = Array.isArray(data.fees) ? data.fees : [];
+                    schoolData.marksheets = Array.isArray(data.marksheets) ? data.marksheets : [];
+                    schoolData.subjects = Array.isArray(data.subjects) ? data.subjects : [];
+                    schoolData.exams = Array.isArray(data.exams) ? data.exams : [];
+
+                    if (!schoolData.students.length && Array.isArray(data.allStudents)) {
+                        schoolData.students = data.allStudents;
+                    }
+                    if (!schoolData.students.length && data.student && typeof data.student === 'object') {
+                        schoolData.students = [data.student];
+                    }
+                    studentsList = schoolData.students;
+                    remoteHasStudents = studentsList.length > 0;
+                }
+
+                if ((!schoolData.fees.length || !schoolData.marksheets.length) && LOCAL_DB_URL) {
+                    try {
+                        const localResponse = await fetch(LOCAL_DB_URL);
+                        if (localResponse.ok) {
+                            const localData = await localResponse.json();
+                            if (Array.isArray(localData.fees) && !schoolData.fees.length) {
+                                schoolData.fees = localData.fees;
+                            }
+                            if (Array.isArray(localData.marksheets) && !schoolData.marksheets.length) {
+                                schoolData.marksheets = localData.marksheets;
+                            }
+                            if (Array.isArray(localData.students) && !remoteHasStudents) {
+                                schoolData.students = localData.students;
+                                studentsList = localData.students;
+                            }
+                        }
+                    } catch (localError) {
+                        console.warn('Local databash.json load failed:', localError);
+                    }
+                }
+
+                if (!Array.isArray(studentsList)) {
+                    studentsList = [];
+                }
+
+                const student = studentsList.find(s => String(s.sid) === String(sid) || String(s.id) === String(sid) || String(s.student_id) === String(sid));
+
+                if (student) {
+                    studentData = student;
+                    localStorage.setItem("loggedInSID", sid);
+                    setupDashboard();
+                } else {
+                    alert("Student ID (SID) database me nahi mili.");
+                    logout();
+                }
+            } catch (error) {
+                console.error(error);
+                alert("!! Please Check Your Internet !!.");
+            }
+        }
+
+        function setupDashboard() {
+            document.getElementById("login-page").style.display = "none";
+            document.getElementById("dashboard").style.display = "block";
+
+            const name = studentData.name || "N/A";
+            const currentClass = studentData.class || "N/A";
+            const photo = studentData.photo || "https://via.placeholder.com/150";
+
+            document.getElementById("dash-name").innerText = name;
+            document.getElementById("dash-class").innerText = "Class: " + currentClass;
+            document.getElementById("dash-photo").src = photo;
+
+            // 1. Profile Mapping from your exact database keys
+            let profileHTML = `<div class="profile-item" style="grid-column: span 2; text-align:center; border:none; background:none;"><img src="${photo}" style="width:130px; height:130px; border-radius:10px; object-fit:cover; border:3px solid #1a237e;" onerror="this.src='https://via.placeholder.com/150'"></div>`;
+            
+            const keysToDisplay = {
+                "sid": "Student ID (SID)",
+                "name": "Student Name",
+                "class": "Class",
+                "father": "Father's Name",
+                "mother": "Mother's Name",
+                "mobile": "Mobile Number",
+                "gender": "Gender",
+                "dob": "Date of Birth",
+                "address": "Address"
+            };
+
+            for (let key in keysToDisplay) {
+                if (studentData[key] !== undefined) {
+                    profileHTML += `<div class="profile-item"><strong>${keysToDisplay[key]}:</strong> ${studentData[key] || "N/A"}</div>`;
+                }
+            }
+            document.getElementById("profile-data").innerHTML = profileHTML;
+
+            // 2. Fee System Mapping using seperate fee records when available
+            let totalFee = 0;
+            if (studentData.yearlyFee !== undefined && studentData.yearlyFee !== null) {
+                totalFee = Number(studentData.yearlyFee) || 0;
+            } else if (studentData.fee !== undefined && studentData.fee !== null) {
+                totalFee = Number(studentData.fee) || 0;
+            } else if (studentData.totalFee !== undefined && studentData.totalFee !== null) {
+                totalFee = Number(studentData.totalFee) || 0;
+            }
+
+            let paidFee = 0;
+            let feeRows = '';
+            let paymentHistory = [];
+
+            if (Array.isArray(schoolData.fees) && schoolData.fees.length > 0) {
+                const studentFees = schoolData.fees.filter(f => String(f.sid) === String(studentData.sid) || String(f.sid) === String(studentData.id));
+                studentFees.forEach(f => {
+                    const paid = Number(f.paid) || 0;
+                    paidFee += paid;
+                    paymentHistory.push({ month: f.month || f.monthName || f.month_name || 'Month', paid });
+                });
+            }
+
+            if (!paidFee) {
+                if (studentData.paidFee !== undefined && studentData.paidFee !== null) {
+                    paidFee = Number(studentData.paidFee) || 0;
+                } else if (studentData.feePaid !== undefined && studentData.feePaid !== null) {
+                    paidFee = Number(studentData.feePaid) || 0;
+                }
+            }
+
+            let unpaidFee = totalFee - paidFee;
+            if (totalFee === 0 && paidFee > 0) {
+                unpaidFee = 0;
+            }
+            if (unpaidFee < 0) {
+                unpaidFee = 0;
+            }
+
+            feeRows += `<tr class="fee-total"><td>Yearly Fee (Total)</td><td>₹${totalFee}</td></tr>`;
+            feeRows += `<tr class="fee-paid"><td>Paid Fee</td><td>₹${paidFee}</td></tr>`;
+            feeRows += `<tr class="fee-unpaid"><td>Unpaid Fee (Due)</td><td>₹${unpaidFee}</td></tr>`;
+
+            if (paymentHistory.length) {
+                feeRows += `<tr><td colspan="2" style="font-weight:700;">Payment History</td></tr>`;
+                paymentHistory.forEach(rec => {
+                    feeRows += `<tr><td>${rec.month}</td><td>₹${rec.paid}</td></tr>`;
+                });
+            }
+
+            document.getElementById("fee-data").innerHTML = `<table class="fee-table">
+                <thead><tr><th>Fee Description</th><th>Amount Status (₹)</th></tr></thead>
+                <tbody>${feeRows}</tbody>
+            </table>`;
+
+            // 3. Marksheet System - support separate marksheet records and nested student marks
+            document.getElementById("ms-name").innerText = name;
+            document.getElementById("ms-sid").innerText = studentData.sid || "N/A";
+            document.getElementById("ms-class").innerText = currentClass;
+
+            let marksheets = [];
+            if (Array.isArray(schoolData.marksheets) && schoolData.marksheets.length > 0) {
+                marksheets = schoolData.marksheets.filter(m => String(m.sid) === String(studentData.sid) || String(m.sid) === String(studentData.id));
+            }
+            if (!marksheets.length && studentData.marks && typeof studentData.marks === 'object') {
+                marksheets = [{ exam: studentData.exam || 'Marksheet', scores: studentData.marks }];
+            }
+            if (!marksheets.length && studentData.marksheets && Array.isArray(studentData.marksheets)) {
+                marksheets = studentData.marksheets.map(m => typeof m === 'object' ? m : { exam: 'Marksheet', scores: m });
+            }
+            if (!marksheets.length && studentData.scores && typeof studentData.scores === 'object') {
+                marksheets = [{ exam: studentData.exam || 'Marksheet', scores: studentData.scores }];
+            }
+
+            let rowsHTML = "";
+            if (marksheets.length) {
+                const firstMarksheet = marksheets[0];
+                const scoreObject = firstMarksheet.scores || firstMarksheet.marks || firstMarksheet.scores || {};
+                const subjects = Object.keys(scoreObject).length ? Object.keys(scoreObject) : ['Hindi', 'English', 'Mathematics', 'Science', 'Social Science'];
+
+                subjects.forEach(sub => {
+                    const value = scoreObject[sub];
+                    let ut1 = '-';
+                    let ut2 = '-';
+                    let hy = '-';
+                    let ut3 = '-';
+                    let an = '-';
+
+                    if (value !== undefined && value !== null) {
+                        if (typeof value === 'object') {
+                            ut1 = value.ut1 !== undefined ? value.ut1 : ut1;
+                            ut2 = value.ut2 !== undefined ? value.ut2 : ut2;
+                            hy = value.hy !== undefined ? value.hy : hy;
+                            ut3 = value.ut3 !== undefined ? value.ut3 : ut3;
+                            an = value.annual !== undefined ? value.annual : value.an || an;
+                        } else {
+                            an = value;
+                        }
+                    }
+
+                    rowsHTML += `<tr>
+                        <td style="text-align: left; font-weight: bold; padding-left: 8px;">${sub}</td>
+                        <td>25</td><td>${ut1}</td>
+                        <td>25</td><td>${ut2}</td>
+                        <td>100</td><td>${hy}</td>
+                        <td>25</td><td>${ut3}</td>
+                        <td>100</td><td>${an}</td>
+                    </tr>`;
+                });
+            } else {
+                rowsHTML = `<tr><td colspan="11" style="padding:12px; text-align:center;">Marks data not available for this student.</td></tr>`;
+            }
+            document.getElementById("marksheet-rows").innerHTML = rowsHTML;
+        }
+
+        function sendWhatsApp() {
+            const msg = encodeURIComponent(document.getElementById("whatsapp-msg").value);
+            if(!msg) { alert("Kripya message likhein!"); return; }
+            window.open(`https://wa.me/916389259200?text=${msg}`, '_blank');
+        }
+
+        function logout() {
+            localStorage.removeItem("loggedInSID");
+            document.getElementById("login-page").style.display = "block";
+            document.getElementById("dashboard").style.display = "none";
+        }
+    </script>
+</body>
+</html>

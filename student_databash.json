@@ -1,8 +1,366 @@
-{
-    "students": [],
-    "teachers": [],
-    "fees": [],
-    "marksheets": [],
-    "exams": [],
-    "subjects": []
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Royal School ERP Pro v9 - Cloud Connected Edition</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
 }
+
+body{
+background:#071028; 
+color:white;
+overflow-x:hidden;
+transition: background 0.5s ease;
+}
+
+/* AUTOMATIC FACE LOGIN BANNER */
+#loginPage{\nposition:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+background:linear-gradient(to bottom,#020617,#071028);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:99999;
+}
+
+.login-box{
+width:420px;
+background:rgba(255,255,255,0.05);
+padding:35px;
+border-radius:25px;
+border:1px solid rgba(255,255,255,0.08);
+backdrop-filter:blur(10px);
+text-align: center;
+}
+
+.sidebar {
+    width: 260px;
+    background: #0f172a;
+    min-height: 100vh;
+    padding: 20px;
+}
+.nav-btn {
+    width: 100%;
+    padding: 12px;
+    text-align: left;
+    background: rgba(255,255,255,0.03);
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.1); color: #facc15; }
+.page { display: none; padding: 24px; width: 100%; }
+.page.active { display: block; }
+input, select, textarea {
+    width: 100%; padding: 10px; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 6px; margin-bottom: 12px;
+}
+.btn {
+    padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-block;
+}
+.btn-primary { background: #facc15; color: black; }
+.btn-primary:hover { background: #eab308; }
+.btn-success { background: #22c55e; color: white; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
+th { background: #1e293b; color: #facc15; }
+</style>
+</head>
+<body>
+
+<div class="w-full bg-slate-900 border-b border-slate-800 px-4 py-2 flex justify-between items-center text-xs text-slate-400 no-print">
+    <div>👑 Royal School ERP Management System</div>
+    <div id="cloudIndicator" class="font-bold text-yellow-400">🔄 Initializing Sync Engine...</div>
+</div>
+
+<div class="flex">
+    <div id="mainSidebar" class="sidebar">
+        <div class="text-center mb-6">
+            <img id="schoolLogo" src="https://via.placeholder.com/80" class="w-16 h-16 mx-auto rounded-full object-cover mb-2 border border-slate-700">
+            <h2 id="schoolName" class="text-md font-bold text-yellow-400">Royal School</h2>
+        </div>
+        <button class="nav-btn" onclick="showPage('dashboardPage')">📊 Dashboard Dashboard</button>
+        <button class="nav-btn" onclick="showPage('studentsPage')">👤 Student Registry</button>
+        <button class="nav-btn" onclick="showPage('feesPage')">💰 Fee Collection</button>
+        <button class="nav-btn" onclick="showPage('marksPage')">📝 Examination Scores</button>
+        <button class="nav-btn" onclick="showPage('settingsPage')">⚙️ System Configuration</button>
+    </div>
+
+    <div class="flex-1">
+        
+        <div id="dashboardPage" class="page active">
+            <h2 class="text-2xl font-bold text-yellow-400 mb-6">📈 Live Dashboard Analytics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <p class="text-sm text-slate-400">Total Registered Students</p>
+                    <h1 id="studentCount" class="text-4xl font-bold mt-2 text-white">0</h1>
+                </div>
+                <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700">
+                    <p class="text-sm text-slate-400">System Mode</p>
+                    <h1 class="text-2xl font-bold mt-3 text-green-400">☁️ Cloud Mode Active</h1>
+                </div>
+            </div>
+            
+            <div class="bg-slate-900/40 p-6 rounded-xl border border-slate-800">
+                <h3 class="font-bold text-slate-300 mb-2">💡 JSONBin Integration Guide:</h3>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Aapka ERP system aapki JSONBin live link se completely map ho chuka hai. Jab bhi aap yahan koi naya data update karein, toh <b>Settings Configuration</b> page par jaakar apna updated JSON data copy karke apne JSONBin.io account me save kar dein. Isse aapke portal ke bache hamesha real-time update dekhte rahenge.
+                </p>
+            </div>
+        </div>
+
+        <div id="studentsPage" class="page">
+            <h2 class="text-2xl font-bold text-yellow-400 mb-4">👤 Admission Registry Management</h2>
+            <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="text-xs">Student ID (Auto)</label><input id="stdSID" type="text" readonly></div>
+                    <div><label class="text-xs">Student Full Name</label><input id="stdName" type="text" placeholder="John Doe"></div>
+                    <div><label class="text-xs">Class/Standard</label><input id="stdClass" type="text" placeholder="10th"></div>
+                    <div><label class="text-xs">Father's Name</label><input id="stdFather" type="text"></div>
+                    <div><label class="text-xs">Total Yearly Fee (₹)</label><input id="stdYearlyFee" type="number" placeholder="25000"></div>
+                    <div><label class="text-xs">Photo URL</label><input id="stdPhoto" type="text" placeholder="https://..."></div>
+                </div>
+                <button class="btn btn-primary mt-2" onclick="saveStudent()">Register Student 🚀</button>
+            </div>
+            <h3 class="font-bold text-lg text-slate-300">Active Students Database:</h3>
+            <table class="w-full">
+                <thead><tr><th>SID</th><th>Name</th><th>Class</th><th>Yearly Fee</th></tr></thead>
+                <tbody id="studentsTableBody"></tbody>
+            </table>
+        </div>
+
+        <div id="feesPage" class="page">
+            <h2 class="text-2xl font-bold text-green-400 mb-4">💰 Student Fee Ledger Engine</h2>
+            <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div><label class="text-xs">Student ID (SID)</label><input id="feeSID" type="number"></div>
+                    <div><label class="text-xs">Month Name</label><input id="feeMonth" type="text" placeholder="April 2026"></div>
+                    <div><label class="text-xs">Paid Amount (₹)</label><input id="feeAmount" type="number"></div>
+                </div>
+                <button class="btn btn-success mt-2" onclick="saveFeeReceipt()">Collect Fee & Clear 💰</button>
+            </div>
+            <h3 class="font-bold text-lg text-slate-300">Transaction Receipts Log:</h3>
+            <table>
+                <thead><tr><th>SID</th><th>Month</th><th>Amount Deposited</th></tr></thead>
+                <tbody id="feeTableBody"></tbody>
+            </table>
+        </div>
+
+        <div id="marksPage" class="page">
+            <h2 class="text-2xl font-bold text-blue-400 mb-4">📝 Examination Assessment Marks</h2>
+            <div class="bg-slate-800/40 p-6 rounded-xl border border-slate-700 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div><label class="text-xs">Student ID (SID)</label><input id="markSID" type="number"></div>
+                    <div><label class="text-xs">Exam Name</label><input id="markExam" type="text" placeholder="Final Term"></div>
+                    <div><label class="text-xs">Subject Name</label><input id="markSubject" type="text" placeholder="Mathematics"></div>
+                    <div><label class="text-xs">Obtained Marks</label><input id="markScore" type="number"></div>
+                </div>
+                <button class="btn btn-primary mt-2" onclick="saveMarksheetScore()">Publish Marks 🏆</button>
+            </div>
+            <h3 class="font-bold text-lg text-slate-300">Academic Marks Records:</h3>
+            <table>
+                <thead><tr><th>SID</th><th>Exam</th><th>Subject</th><th>Marks</th></tr></thead>
+                <tbody id="marksTableBody"></tbody>
+            </table>
+        </div>
+
+        <div id="settingsPage" class="page">
+            <h2 class="text-2xl font-bold text-slate-300 mb-4">⚙️ Cloud Data Export Center</h2>
+            <p class="text-xs text-slate-400 mb-4">
+                Jab bhi aap data badlein, niche diye gaye box se poora code copy karke apne <b>JSONBin.io</b> bin me update/edit kar dein.
+            </p>
+            <textarea id="jsonOutputArea" rows="15" class="w-full font-mono text-xs bg-black text-green-400 p-4 border border-slate-800 rounded-xl" readonly></textarea>
+            <button class="btn btn-primary mt-2" onclick="copyJsonData()">📋 Copy JSON Data For Cloud Upload</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// AAPKI LIVE DATA TUNNEL LINK
+const cloudJsonBinUrl = "https://api.jsonbin.io/v3/b/6a1411cfee5a733b12179ee6/latest?meta=false";
+
+let schoolData = {
+    students: [],
+    fees: [],
+    marksheets: []
+};
+
+// INITIAL LOAD FROM CLOUD
+window.onload = function() {
+    generateSID();
+    
+    fetch(cloudJsonBinUrl)
+    .then(res => {
+        if(!res.ok) throw new Error("Cloud stream fetch error");
+        return res.json();
+    })
+    .then(data => {
+        if(data.students) {
+            schoolData = data;
+            document.getElementById('cloudIndicator').innerText = "🟢 Cloud Engine Connected & Live Sync Enabled";
+            document.getElementById('cloudIndicator').className = "font-bold text-green-400";
+        } else {
+            loadFromLocalStorage();
+        }
+        refreshAllUIRecords();
+    })
+    .catch(err => {
+        console.log("Network delay, loading cached local data system...");
+        loadFromLocalStorage();
+        document.getElementById('cloudIndicator').innerText = "🟡 Working on Offline Mode Cache (Check Internet)";
+        document.getElementById('cloudIndicator').className = "font-bold text-yellow-500";
+        refreshAllUIRecords();
+    });
+};
+
+function loadFromLocalStorage() {
+    let saved = localStorage.getItem('royalSchoolMasterData');
+    if(saved) {
+        schoolData = JSON.parse(saved);
+    }
+}
+
+function backupToLocalStorage() {
+    localStorage.setItem('royalSchoolMasterData', JSON.stringify(schoolData));
+    document.getElementById('jsonOutputArea').value = JSON.stringify(schoolData, null, 4);
+}
+
+function generateSID() {
+    document.getElementById('stdSID').value = schoolData.students.length + 1;
+}
+
+function showPage(id){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+function saveStudent() {
+    let sid = document.getElementById('stdSID').value;
+    let name = document.getElementById('stdName').value.trim();
+    let cls = document.getElementById('stdClass').value.trim();
+    let fee = document.getElementById('stdYearlyFee').value;
+    let photo = document.getElementById('stdPhoto').value.trim();
+
+    if(!name || !cls || !fee) { alert("Please complete form details!"); return; }
+
+    schoolData.students.push({
+        sid: parseInt(sid),
+        name: name,
+        class: cls,
+        yearlyFee: parseFloat(fee),
+        photo: photo || ""
+    });
+
+    backupToLocalStorage();
+    refreshAllUIRecords();
+    generateSID();
+    
+    // reset form fields
+    document.getElementById('stdName').value = "";
+    document.getElementById('stdClass').value = "";
+    document.getElementById('stdYearlyFee').value = "";
+    document.getElementById('stdPhoto').value = "";
+    alert("Student Profile Registered Locally! Go to Settings to upload cloud backup.");
+}
+
+function saveFeeReceipt() {
+    let sid = document.getElementById('feeSID').value;
+    let month = document.getElementById('feeMonth').value.trim();
+    let paid = document.getElementById('feeAmount').value;
+
+    if(!sid || !month || !paid) { alert("Fields cannot be empty!"); return; }
+
+    schoolData.fees.push({
+        sid: parseInt(sid),
+        month: month,
+        paid: parseFloat(paid)
+    });
+
+    backupToLocalStorage();
+    refreshAllUIRecords();
+    
+    document.getElementById('feeSID').value = "";
+    document.getElementById('feeMonth').value = "";
+    document.getElementById('feeAmount').value = "";
+    alert("Fee Receipt Generated!");
+}
+
+function saveMarksheetScore() {
+    let sid = document.getElementById('markSID').value;
+    let exam = document.getElementById('markExam').value.trim();
+    let sub = document.getElementById('markSubject').value.trim();
+    let score = document.getElementById('markScore').value;
+
+    if(!sid || !exam || !sub || !score) { alert("All score fields required!"); return; }
+
+    let existingSheet = schoolData.marksheets.find(m => m.sid === parseInt(sid) && m.exam === exam);
+    if(existingSheet) {
+        existingSheet.scores[sub] = parseFloat(score);
+    } else {
+        let newSheet = {
+            sid: parseInt(sid),
+            exam: exam,
+            scores: {}
+        };
+        newSheet.scores[sub] = parseFloat(score);
+        schoolData.marksheets.push(newSheet);
+    }
+
+    backupToLocalStorage();
+    refreshAllUIRecords();
+    alert("Examination Record Cached!");
+}
+
+function refreshAllUIRecords() {
+    // Dashboard analytics
+    document.getElementById('studentCount').innerText = schoolData.students.length;
+    
+    // Render students
+    let stdTbody = document.getElementById('studentsTableBody');
+    stdTbody.innerHTML = "";
+    schoolData.students.forEach(s => {
+        stdTbody.innerHTML += `<tr><td>${s.sid}</td><td>${s.name}</td><td>${s.class}</td><td>₹${s.yearlyFee}</td></tr>`;
+    });
+
+    // Render fees records
+    let feeTbody = document.getElementById('feeTableBody');
+    feeTbody.innerHTML = "";
+    schoolData.fees.forEach(f => {
+        feeTbody.innerHTML += `<tr><td>${f.sid}</td><td>${f.month}</td><td>₹${f.paid}</td></tr>`;
+    });
+
+    // Render marksheet details
+    let marksTbody = document.getElementById('marksTableBody');
+    marksTbody.innerHTML = "";
+    schoolData.marksheets.forEach(m => {
+        for(let key in m.scores) {
+            marksTbody.innerHTML += `<tr><td>${m.sid}</td><td>${m.exam}</td><td>${key}</td><td>${m.scores[key]}</td></tr>`;
+        }
+    });
+
+    document.getElementById('jsonOutputArea').value = JSON.stringify(schoolData, null, 4);
+}
+
+function copyJsonData() {
+    let area = document.getElementById('jsonOutputArea');
+    area.select();
+    document.execCommand('copy');
+    alert("📋 Data Copied! Ab isko JSONBin.io par jaakar edit karke save kar dein.");
+}
+</script>
+</body>
+</html>
